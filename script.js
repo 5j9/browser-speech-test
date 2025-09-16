@@ -1,6 +1,7 @@
 const voiceSelect = document.getElementById('voice-select');
 const textToSpeak = document.getElementById('text-to-speak');
 const speakButton = document.getElementById('speak-button');
+const stopButton = document.getElementById('stop-button');
 const messageDiv = document.getElementById('message');
 
 // Ensure the browser supports the Web Speech API
@@ -17,6 +18,7 @@ if ('speechSynthesis' in window) {
         if (englishVoices.length === 0) {
             messageDiv.textContent = 'No English voices found. Your browser might not support this.';
             speakButton.disabled = true;
+            stopButton.disabled = true;
             return;
         }
         
@@ -42,6 +44,11 @@ if ('speechSynthesis' in window) {
 
     // Speak the text when the button is clicked
     speakButton.addEventListener('click', () => {
+        // Stop any ongoing speech before starting a new one
+        if (synth.speaking) {
+            synth.cancel();
+        }
+
         if (textToSpeak.value.trim() === '') {
             messageDiv.textContent = 'Please enter some text to speak.';
             return;
@@ -57,24 +64,45 @@ if ('speechSynthesis' in window) {
 
         const utterance = new SpeechSynthesisUtterance(textToSpeak.value);
         utterance.voice = selectedVoice;
-        utterance.rate = 1; // You can adjust speed
-        utterance.pitch = 1; // You can adjust pitch
+        utterance.rate = 1; 
+        utterance.pitch = 1; 
 
         // Start speaking
         synth.speak(utterance);
 
-        // Optional: show a message while speaking
+        // Disable speak button while speaking
+        speakButton.disabled = true;
+        stopButton.disabled = false;
         messageDiv.textContent = 'Speaking...';
+        
         utterance.onend = () => {
             messageDiv.textContent = 'Done speaking.';
+            speakButton.disabled = false;
+            stopButton.disabled = true;
         };
         utterance.onerror = (event) => {
             messageDiv.textContent = 'An error occurred: ' + event.error;
+            speakButton.disabled = false;
+            stopButton.disabled = true;
         };
     });
+
+    // Add event listener for the stop button
+    stopButton.addEventListener('click', () => {
+        if (synth.speaking) {
+            synth.cancel();
+            messageDiv.textContent = 'Speech stopped.';
+            speakButton.disabled = false;
+            stopButton.disabled = true;
+        }
+    });
+
+    // Initially disable the stop button
+    stopButton.disabled = true;
 
 } else {
     // If the browser doesn't support the API
     messageDiv.textContent = 'Web Speech API is not supported in this browser.';
     speakButton.disabled = true;
+    stopButton.disabled = true;
 }
