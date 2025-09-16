@@ -52,8 +52,6 @@
         button {
             width: 100%;
             padding: 15px;
-            background-color: #007bff;
-            color: white;
             border: none;
             border-radius: 6px;
             font-size: 18px;
@@ -61,8 +59,24 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        button:hover {
+        #speak-button {
+            background-color: #007bff;
+            color: white;
+            margin-bottom: 10px;
+        }
+        #speak-button:hover {
             background-color: #0056b3;
+        }
+        #stop-button {
+            background-color: #dc3545;
+            color: white;
+        }
+        #stop-button:hover {
+            background-color: #c82333;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
         .message {
             margin-top: 15px;
@@ -83,6 +97,7 @@
             <textarea id="text-to-speak">Hello, this is a test of the Web Speech API voice. Pick a voice from the dropdown and click 'Speak'!</textarea>
         </div>
         <button id="speak-button">Speak</button>
+        <button id="stop-button">Stop</button>
         <div class="message" id="message"></div>
     </div>
     <script src="script.js"></script>
